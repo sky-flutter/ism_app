@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: MyColors.colorPrimary,
       ),
-      initialRoute: Routes.strHomeRoute,
+      initialRoute: Routes.strReceiptDetailsRoute,
       routes: Routes.appRoutes(),
     );
   }

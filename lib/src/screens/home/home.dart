@@ -39,6 +39,7 @@ class _HomeState extends State<Home> {
         typeTitle: "Receipts",
         typeSubTitle: "Warehouse Afrobio",
         received: "3 to Receive",
+        routeName: Routes.strReceiptsRoute,
         imagePath: Strings.icReceipt));
 
     menuType.add(MenuType(
@@ -120,7 +121,11 @@ class ListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       borderRadius: MyBorder.commonBorderRadius(),
-      onTap: () {},
+      onTap: () {
+        if(menuType.routeName.isNotEmpty){
+          MyNavigator.pushNamed(menuType.routeName);
+        }
+      },
       child: MyItemContainer(
         margin: const EdgeInsets.only(top: 28, left: 20, right: 20),
         outlineColor: MyColors.color_E2E9EF,
@@ -132,8 +137,6 @@ class ListItem extends StatelessWidget {
                   top: 23, bottom: 23, left: 15, right: 12),
               child: Image.asset(
                 menuType.imagePath,
-                height: 56,
-                width: 56,
               ),
             ),
             Expanded(
@@ -176,7 +179,7 @@ class ListItem extends StatelessWidget {
                 ),
               ),
             Container(
-              child: Image.asset(Strings.icArrowForward),
+              child: Icon(Icons.arrow_forward,color: MyColors.color_6E7578,),
               margin: const EdgeInsets.only(right: 15),
             )
           ],

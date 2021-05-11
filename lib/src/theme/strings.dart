@@ -10,6 +10,7 @@ class Strings {
   static const String icInternalTransfer = "assets/images/ic_internal_transfer.png";
   static const String icInventoryModule = "assets/images/ic_inventory_module.png";
   static const String icDeliveryOrder = "assets/images/ic_delivery_order.png";
+  static const String icQRCode = "assets/images/ic_qr_code.svg";
 
 
   static const String icArrowForward = "assets/images/ic_arrow_forward.png";
@@ -27,4 +28,14 @@ class Strings {
   static var signUp=" Sign up";
 
   static String home="Home";
+
+  static String receipts="Receipts";
+
+  static var search="Search";
+
+  static String detailedOperation="Detailed Operations";
+
+  static String confirm="CONFIRM";
+
+  static String discard="DISCARD";
 }

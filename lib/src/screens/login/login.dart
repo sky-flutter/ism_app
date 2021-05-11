@@ -98,11 +98,11 @@ class _LoginFormState extends State<LoginForm> {
             },
             focusedColor: MyColors.color_F18719,
             prefix: Container(
-              child: Image.asset(
-                Strings.icEmail,
+              child: Icon(
+                Icons.mail_outline_rounded,
                 color: isEmailFocused
                     ? MyColors.color_F18719
-                    : MyColors.color_000000,
+                    : MyColors.color_3F4446,
               ),
               margin: EdgeInsets.only(left: 19),
             ),
@@ -114,7 +114,7 @@ class _LoginFormState extends State<LoginForm> {
               fontWeight: FontWeight.normal,
               color: isPasswordFocused
                   ? MyColors.color_F18719
-                  : MyColors.color_6E7578,
+                  : MyColors.color_3F4446,
               fontSize: 14,
             ),
           ),
@@ -131,7 +131,9 @@ class _LoginFormState extends State<LoginForm> {
                   isPasswordTextVisible = !isPasswordTextVisible;
                   setState(() {});
                 },
-                child: Image.asset(Strings.icVisibility),
+                child: Icon(isPasswordTextVisible
+                    ? Icons.visibility_outlined
+                    : Icons.visibility_off_outlined),
               ),
             ),
             focusedColor: MyColors.color_F18719,
@@ -140,11 +142,11 @@ class _LoginFormState extends State<LoginForm> {
               setState(() {});
             },
             prefix: Container(
-              child: Image.asset(
-                Strings.icLock,
+              child: Icon(
+                Icons.lock_outline_rounded,
                 color: isPasswordFocused
                     ? MyColors.color_F18719
-                    : MyColors.color_000000,
+                    : MyColors.color_3F4446,
               ),
               margin: EdgeInsets.only(left: 19),
             ),
@@ -154,7 +156,9 @@ class _LoginFormState extends State<LoginForm> {
             width: double.infinity,
             child: MyButton(
               Strings.login,
-              () {},
+              () {
+                MyNavigator.pushReplacedNamed(Routes.strHomeRoute);
+              },
               outlineColor: MyColors.color_F18719,
               textColor: MyColors.color_FFFFFF,
               fontWeight: FontWeight.bold,

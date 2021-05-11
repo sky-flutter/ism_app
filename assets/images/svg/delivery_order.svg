@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="54" height="54" viewBox="0 0 54 54">
+    <defs>
+        <style>.a{fill:url(#a);}.b{fill:url(#b);}</style>
+        <linearGradient id="a" x1="0.5" y1="1" x2="0.5" gradientUnits="objectBoundingBox">
+            <stop offset="0" stop-color="#ffe3c5" />
+            <stop offset="0.745" stop-color="#fff3e6" />
+            <stop offset="1" stop-color="#fff8f1" />
+        </linearGradient>
+        <linearGradient id="b" x1="0.5" y1="1" x2="0.5" gradientUnits="objectBoundingBox">
+            <stop offset="0" stop-color="#e67500" />
+            <stop offset="1" stop-color="#f18719" />
+        </linearGradient>
+    </defs>
+    <g transform="translate(-0.143 -0.276)">
+        <g transform="translate(0.143 0.143)">
+            <circle class="a" cx="27" cy="27" r="27" transform="translate(0 0.134)" />
+        </g>
+        <g transform="translate(-93.859 -109.224)">
+            <g transform="translate(105.001 121.5)">
+                <g transform="translate(0 0)">
+                    <path class="b"
+                        d="M123.662,125.443l.53.265V121.5h-1.919v4.208l.53-.265A.96.96,0,0,1,123.662,125.443Zm-6.187,9.5H128.99a.959.959,0,0,0,.96-.96V122.46a.959.959,0,0,0-.96-.96h-2.879v5.763a.96.96,0,0,1-1.389.859l-1.49-.746-1.49.746a.96.96,0,0,1-1.389-.859V121.5h-2.879a.96.96,0,0,0-.96.96v11.525a.96.96,0,0,0,.96.96Zm19.518,1.438a4.2,4.2,0,0,0-4.469.953l-3.882,3.886a4.765,4.765,0,0,1-3.393,1.407h-5.292a.96.96,0,0,1,0-1.921h5.335a4.431,4.431,0,0,0,3.963-2.452.96.96,0,0,0-.858-1.39h-10.8a4.792,4.792,0,0,0-2.379.632l-9.725,5.487a.961.961,0,0,0-.327,1.369L109,150.118a.96.96,0,0,0,1.318.275l6.082-3.921h10.437a4.8,4.8,0,0,0,3.393-1.407l7.1-7.1A.961.961,0,0,0,136.993,136.384Z"
+                        transform="translate(-105.001 -121.5)" />
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
