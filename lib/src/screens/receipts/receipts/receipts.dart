@@ -3,7 +3,7 @@ import 'package:ism_app/src/widgets/container/container_shadow.dart';
 import 'package:ism_app/src/widgets/container/item_container.dart';
 import 'package:ism_app/src/widgets/input/text_field_icon.dart';
 
-import '../../../imports.dart';
+import '../../../../imports.dart';
 
 class Receipts extends StatefulWidget {
   @override

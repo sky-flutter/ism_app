@@ -58,11 +58,12 @@ class _DetailOperationsState extends State<DetailOperations> {
               children: [
                 Expanded(
                   child: Container(
-                    margin: const EdgeInsets.only(top: 24, left: 20, right: 10,bottom: 48),
+                    margin: const EdgeInsets.only(
+                        top: 24, left: 20, right: 10, bottom: 24),
                     width: double.infinity,
                     child: MyButton(
                       Strings.confirm,
-                          () {
+                      () {
                         MyNavigator.pushReplacedNamed(Routes.strHomeRoute);
                       },
                       outlineColor: MyColors.color_F18719,
@@ -75,11 +76,12 @@ class _DetailOperationsState extends State<DetailOperations> {
                 ),
                 Expanded(
                   child: Container(
-                    margin:const  EdgeInsets.only(top: 24, left: 10, right: 20,bottom: 48),
+                    margin: const EdgeInsets.only(
+                        top: 24, left: 10, right: 20, bottom: 48),
                     width: double.infinity,
                     child: MyButton(
                       Strings.discard,
-                          () {
+                      () {
                         MyNavigator.pushReplacedNamed(Routes.strHomeRoute);
                       },
                       outlineColor: MyColors.color_F18719,
@@ -186,11 +188,13 @@ class TopItemView extends StatelessWidget {
               SizedBox(
                 width: 11,
               ),
-              MyText(
-                "[Access-Bur-00001] Modem",
-                color: MyColors.color_F18719,
-                fontSize: 16,
-                fontWeight: FontWeight.normal,
+              Expanded(
+                child: MyText(
+                  "[Access-Bur-00001] Modem",
+                  color: MyColors.color_F18719,
+                  fontSize: 16,
+                  fontWeight: FontWeight.normal,
+                ),
               ),
             ],
           )

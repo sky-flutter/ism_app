@@ -1,3 +1,4 @@
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:ism_app/src/screens/home/model/menu_type.dart';
 import 'package:ism_app/src/screens/home/model/store_type.dart';
 import 'package:ism_app/src/widgets/container/container.dart';
@@ -135,9 +136,7 @@ class ListItem extends StatelessWidget {
             Container(
               margin: const EdgeInsets.only(
                   top: 23, bottom: 23, left: 15, right: 12),
-              child: Image.asset(
-                menuType.imagePath,
-              ),
+              child: SvgPicture.asset(menuType.imagePath),
             ),
             Expanded(
               child: Column(

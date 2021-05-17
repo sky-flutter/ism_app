@@ -1,16 +1,10 @@
-# ism_app
+# ISM App
 
-A new Flutter application.
+## To generate .freezed file, execute
+flutter packages pub run build_runner build
 
-## Getting Started
+## To watch the file  change, execute
+flutter packages pub run build_runner watch
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## To watch auto change and Delete previous generate file
+flutter packages pub run build_runner watch --delete-conflicting-outputs

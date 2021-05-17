@@ -1,0 +1,15 @@
+{
+  "@@locale": "fr_FR",
+  "log_in":"le login",
+  "login_into_app":"Veuillez vous connecter pour continuer à utiliser\nnotre application.",
+  "email":"l'Email",
+  "password":"le mot de passe",
+  "dont_have_account":"Vous n'avez pas de compte?",
+  "signup":"š'inscrire",
+  "home":"Domicile",
+  "receipts":"Reçus",
+  "search":"Rechercher",
+  "detailed_operations":"Opérations détaillées",
+  "confirm":"CONFIRMER",
+  "discard":"JETER"
+}

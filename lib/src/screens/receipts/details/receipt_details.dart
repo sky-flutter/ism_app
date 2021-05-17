@@ -32,7 +32,7 @@ class _ReceiptDetailsState extends State<ReceiptDetails> {
               color: MyColors.color_FFFFFF,
             ),
             onPressed: () {
-              MyNavigator.navState.pop();
+              MyNavigator.pushNamed(Routes.strDetailOperationRoute);
             },
           )
         ],
@@ -77,16 +77,6 @@ class _ReceiptDetailsState extends State<ReceiptDetails> {
                       shrinkWrap: true,
                       itemCount: 2,
                     ),
-                    SvgPicture.asset("assets/images/svg/delivery_order.svg"),
-                    // SvgPicture.asset("assets/images/svg/email.svg"),
-                    // SvgPicture.asset("assets/images/svg/filter.svg"),
-                    // SvgPicture.asset("assets/images/svg/internal_transfer.svg"),
-                    // SvgPicture.asset("assets/images/svg/inventory_modules.svg"),
-                    // SvgPicture.asset("assets/images/svg/lock.svg"),
-                    // SvgPicture.asset("assets/images/svg/login_bottom.svg"),
-                    // SvgPicture.asset("assets/images/svg/receipts.svg"),
-                    // SvgPicture.asset("assets/images/svg/search.svg"),
-                    // SvgPicture.asset("assets/images/svg/visibility.svg"),
                     SizedBox(
                       height: 100,
                     ),

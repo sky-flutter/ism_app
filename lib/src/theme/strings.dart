@@ -6,10 +6,10 @@ class Strings {
   static const String icEmail = "assets/images/ic_email.png";
   static const String loginBottomImage = "assets/images/ic_login_bottom.png";
   //Home List Type
-  static const String icReceipt = "assets/images/ic_receipt.png";
-  static const String icInternalTransfer = "assets/images/ic_internal_transfer.png";
-  static const String icInventoryModule = "assets/images/ic_inventory_module.png";
-  static const String icDeliveryOrder = "assets/images/ic_delivery_order.png";
+  static const String icReceipt = "assets/images/svg/receipt.svg";
+  static const String icInternalTransfer = "assets/images/svg/internal_transfer.svg";
+  static const String icInventoryModule = "assets/images/svg/inventory_modules.svg";
+  static const String icDeliveryOrder = "assets/images/svg/delivery_order.svg";
   static const String icQRCode = "assets/images/ic_qr_code.svg";
 
 
