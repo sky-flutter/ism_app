@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ism_app/imports.dart';
+import 'package:ism_app/src/services/error_code.dart';
 
 abstract class BaseBloc<E, S> extends Bloc<E, S> {
   HiveService hiveService = HiveService.instance;
@@ -19,6 +20,24 @@ abstract class BaseBloc<E, S> extends Bloc<E, S> {
 
   bool isConnectionAvailable() {
     return result != ConnectivityResult.none;
+  }
+
+  addDataToDatabase<T>(String boxName, List<T> data) async {
+    await hiveService.clear(boxName);
+    await hiveService.addBoxes<T>(data, boxName);
+  }
+
+  Stream<BaseState> getCachedData<T>(String boxName) async* {
+    var data = await hiveService.getBoxes<T>(boxName);
+    if (data != null && data.isNotEmpty) {
+      yield DataState<List<T>>(data);
+    } else {
+      yield ErrorState(errorCode: ErrorCode.NO_INTERNET_CONNECTION);
+    }
+  }
+
+  Future<List<T>> getCachedDataFuture<T>(String boxName) async {
+    return await hiveService.getBoxes<T>(boxName);
   }
 
   @override

@@ -4,20 +4,27 @@ class ValueItem extends StatelessWidget {
   String title;
   double topMargin;
   Color textColor;
+  bool isHidden;
 
-  ValueItem({this.title, this.topMargin = 11, this.textColor = Colors.white});
+  ValueItem(
+      {this.title,
+      this.topMargin = 11,
+      this.textColor = Colors.white,
+      this.isHidden = true});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: MyText(
-        title,
-        fontWeight: FontWeight.normal,
-        color: textColor,
-        maxLines: 1,
-        fontSize: 14,
+    return Visibility(
+      visible: isHidden,
+      child: Container(
+        child: MyText(
+          title,
+          fontWeight: FontWeight.normal,
+          color: textColor,
+          maxLines: 1,
+        ),
+        margin: EdgeInsets.only(top: topMargin),
       ),
-      margin: EdgeInsets.only(top: topMargin),
     );
   }
 }

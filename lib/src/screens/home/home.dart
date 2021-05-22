@@ -1,10 +1,21 @@
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
+import 'package:ism_app/src/model/receipt_data.dart';
+import 'package:ism_app/src/screens/home/bloc/home_bloc.dart';
+import 'package:ism_app/src/screens/home/bloc/home_event.dart';
 import 'package:ism_app/src/screens/home/model/menu_type.dart';
 import 'package:ism_app/src/screens/home/model/store_type.dart';
+import 'package:ism_app/src/screens/receipts/receipts/bloc/receipt_event.dart';
+import 'package:ism_app/src/screens/receipts/receipts/bloc/receipts_bloc.dart';
+import 'package:ism_app/src/screens/receipts/receipts/receipts.dart';
+import 'package:ism_app/src/utils/error_handler.dart';
 import 'package:ism_app/src/widgets/container/container.dart';
 import 'package:ism_app/src/widgets/container/container_shadow.dart';
 import 'package:ism_app/src/widgets/container/item_container.dart';
 import 'package:ism_app/src/widgets/dropdown/dropdown.dart';
+import 'package:ism_app/src/widgets/error.dart';
+import 'package:ism_app/src/widgets/loading/loader.dart';
 
 import '../../../imports.dart';
 
@@ -17,10 +28,21 @@ class _HomeState extends State<Home> {
   List<StoreType> storeType;
   List<MenuType> menuType;
   StoreType selectedValue;
+  ReceiptsBloc receiptBloc;
+  HomeBloc homeBloc;
+
+  List<ReceiptData> listReceiptData;
+  List<int> listCount = [0, 1, 3, -1];
 
   @override
   void initState() {
     super.initState();
+    homeBloc = HomeBloc();
+    receiptBloc = ReceiptsBloc();
+    homeBloc.add(GetAllProductLotEvent());
+    homeBloc.add(GetAllProductEvent());
+    homeBloc.add(GetLocationEvent());
+    receiptBloc.add(GetAllReceiptsEvent());
     createStoreType();
     createMenuType();
   }
@@ -39,20 +61,20 @@ class _HomeState extends State<Home> {
     menuType.add(MenuType(
         typeTitle: "Receipts",
         typeSubTitle: "Warehouse Afrobio",
-        received: "3 to Receive",
+        received: "to Receive",
         routeName: Routes.strReceiptsRoute,
         imagePath: Strings.icReceipt));
 
     menuType.add(MenuType(
         typeTitle: "Internal Transfers",
         typeSubTitle: "Warehouse Afrobio",
-        received: "1 Transfer",
+        received: "Transfer",
         imagePath: Strings.icInternalTransfer));
 
     menuType.add(MenuType(
         typeTitle: "Delivery Order",
         typeSubTitle: "Warehouse Afrobio",
-        received: "3 To Do",
+        received: "To Do",
         imagePath: Strings.icDeliveryOrder));
 
     menuType.add(MenuType(
@@ -64,18 +86,51 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        leading: Icon(Icons.menu),
-        title: MyText(
-          Strings.home,
-          color: MyColors.color_FFFFFF,
-          fontWeight: FontWeight.bold,
-          fontSize: 20,
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<HomeBloc>(
+          create: (BuildContext context) => homeBloc,
+        ),
+        BlocProvider<ReceiptsBloc>(
+          create: (BuildContext context) => receiptBloc,
+        ),
+      ],
+      child: MultiBlocListener(
+        listeners: [
+          BlocListener<ReceiptsBloc, BaseState>(listener: (context, state) {
+            if (state is DataState) {
+              listReceiptData = state.data;
+              countReceiptData();
+            }
+          })
+        ],
+        child: Scaffold(
+          appBar: AppBar(
+            centerTitle: true,
+            leading: Icon(Icons.menu),
+            title: MyText(
+              Strings.home,
+              color: MyColors.color_FFFFFF,
+              fontWeight: FontWeight.bold,
+              fontSize: 20,
+            ),
+          ),
+          body: BlocBuilder<HomeBloc, BaseState>(
+            builder: (context, state) {
+              return AnimatedSwitcher(
+                duration: Duration(milliseconds: 500),
+                child: getView(state),
+              );
+            },
+          ),
         ),
       ),
-      body: MyContainer(
+    );
+  }
+
+  getView(BaseState state) {
+    if (state is DataState) {
+      return MyContainer(
         bgColor: MyColors.color_F8FAFB,
         children: SingleChildScrollView(
           child: Column(
@@ -99,7 +154,16 @@ class _HomeState extends State<Home> {
               ),
               ListView.builder(
                 itemBuilder: (context, index) {
-                  return ListItem(menuType[index]);
+                  return ListItem(menuType[index], () {
+                    if (menuType[index].routeName == Routes.strReceiptsRoute) {
+                      if (listReceiptData != null) {
+                        Get.to(() => Receipts(listReceiptData));
+                      } else {
+                        showSnackBar(
+                            "Loading", "Please wait until data loaded");
+                      }
+                    }
+                  }, count: listCount[index]);
                 },
                 itemCount: menuType.length,
                 shrinkWrap: true,
@@ -108,25 +172,48 @@ class _HomeState extends State<Home> {
             ],
           ),
         ),
-      ),
-    );
+      );
+    }
+    if (state is ErrorState) {
+      return ErrorView(state.errorMessage ??
+          ErrorHandler.getErrorMessage(state.errorCode) ??
+          "");
+    }
+    if (state is LoadingState) {
+      return Loader();
+    }
+    return Container();
+  }
+
+  void countReceiptData() {
+    int receiptCount = listReceiptData
+        .where((element) => element.internalType.toLowerCase() == "receipt")
+        .toList()
+        .length;
+    listCount[0] = receiptCount;
+    setState(() {});
+  }
+
+  @override
+  void dispose() {
+    homeBloc.close();
+    receiptBloc.close();
+    super.dispose();
   }
 }
 
 class ListItem extends StatelessWidget {
   MenuType menuType;
+  Function onTap;
+  int count;
 
-  ListItem(this.menuType);
+  ListItem(this.menuType, this.onTap, {this.count});
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
       borderRadius: MyBorder.commonBorderRadius(),
-      onTap: () {
-        if(menuType.routeName.isNotEmpty){
-          MyNavigator.pushNamed(menuType.routeName);
-        }
-      },
+      onTap: onTap,
       child: MyItemContainer(
         margin: const EdgeInsets.only(top: 28, left: 20, right: 20),
         outlineColor: MyColors.color_E2E9EF,
@@ -157,7 +244,7 @@ class ListItem extends StatelessWidget {
                 ],
               ),
             ),
-            if (menuType.received.length > 0)
+            if (count >= 0)
               Container(
                 width: 100,
                 child: MyShadowContainer(
@@ -169,7 +256,7 @@ class ListItem extends StatelessWidget {
                   borderRadius: BorderRadius.circular(50),
                   child: Center(
                     child: MyText(
-                      menuType.received,
+                      "$count ${menuType.received}",
                       color: MyColors.color_FFFFFF,
                       fontSize: 10,
                       fontWeight: FontWeight.normal,
@@ -178,7 +265,10 @@ class ListItem extends StatelessWidget {
                 ),
               ),
             Container(
-              child: Icon(Icons.arrow_forward,color: MyColors.color_6E7578,),
+              child: Icon(
+                Icons.arrow_forward,
+                color: MyColors.color_6E7578,
+              ),
               margin: const EdgeInsets.only(right: 15),
             )
           ],

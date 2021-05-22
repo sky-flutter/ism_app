@@ -1,6 +1,8 @@
 import 'package:hive/hive.dart';
 
-@HiveType(typeId: 0)
+part 'all_product_lot.g.dart';
+
+@HiveType(typeId: 3)
 class AllProductLot extends HiveObject {
   @HiveField(0)
   String name;
@@ -14,6 +16,10 @@ class AllProductLot extends HiveObject {
   double productQty;
   @HiveField(5)
   List<Quantity> quantities;
+  @HiveField(6)
+  bool isEdited = false;
+  @HiveField(7)
+  bool isSynced = false;
 
   AllProductLot(
       {this.name,
@@ -23,22 +29,24 @@ class AllProductLot extends HiveObject {
       this.productQty,
       this.quantities});
 
-  static List<AllProductLot> fromJson(List<Map<String, dynamic>> data) {
+  static List<AllProductLot> fromJson(List<dynamic> data) {
     return data
         .map((json) => AllProductLot(
               id: json['id'],
-              name: json['name'],
-              product: json['product'],
+              name: json['name'].toString(),
+              product: json['product'].toString(),
               productId: json['product_id'],
-              quantities: Quantity.fromJson(json['quants']),
+              quantities: json['quants'] != null
+                  ? Quantity.fromJson(json['quants'])
+                  : null,
               productQty: json['product_qty'],
             ))
         .toList();
   }
 }
 
-@HiveType(typeId: 1)
-class Quantity extends HiveObject{
+@HiveType(typeId: 4)
+class Quantity extends HiveObject {
   @HiveField(0)
   String location;
   @HiveField(1)
@@ -48,7 +56,7 @@ class Quantity extends HiveObject{
 
   Quantity({this.location, this.locationId, this.quantity});
 
-  static List<Quantity> fromJson(List<Map<String, dynamic>> data) {
+  static List<Quantity> fromJson(List<dynamic> data) {
     return data
         .map((json) => Quantity(
               location: json['location'],

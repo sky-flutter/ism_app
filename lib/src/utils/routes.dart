@@ -21,9 +21,9 @@ class Routes {
     routes[Routes.strSplashScreenRoute] = (context) => SplashScreen();
     routes[Routes.strLoginRoute] = (context) => Login();
     routes[Routes.strHomeRoute] = (context) => Home();
-    routes[Routes.strReceiptsRoute] = (context) => Receipts();
-    routes[Routes.strReceiptDetailsRoute] = (context) => ReceiptDetails();
-    routes[Routes.strDetailOperationRoute] = (context) => DetailOperations();
+    routes[Routes.strReceiptsRoute] = (context) => Receipts(null);
+    routes[Routes.strReceiptDetailsRoute] = (context) => ReceiptDetails(null);
+    routes[Routes.strDetailOperationRoute] = (context) => DetailOperations(null);
     return routes;
   }
 }

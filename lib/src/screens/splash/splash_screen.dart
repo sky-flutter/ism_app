@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ism_app/imports.dart';
 import 'package:ism_app/src/screens/splash/bloc/splash_event.dart';
 import 'package:ism_app/src/screens/splash/bloc/splash_state.dart';
+import 'package:ism_app/src/utils/preference.dart';
 import 'package:ism_app/src/widgets/loading/loader.dart';
 
 import 'bloc/splash_bloc.dart';

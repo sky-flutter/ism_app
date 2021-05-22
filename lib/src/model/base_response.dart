@@ -1,8 +1,7 @@
 abstract class ApiResponse {
   ApiResponse();
 
-  factory ApiResponse.success(Map<String, dynamic> json) =>
-      BaseResponse.fromJson(json);
+  factory ApiResponse.success(json) => BaseResponse.fromJson(json);
 
   factory ApiResponse.error({int statusCode, String errorMessage}) =>
       ErrorResponse(statusCode: statusCode, errorMessage: errorMessage);
@@ -15,12 +14,10 @@ class BaseResponse extends ApiResponse {
   dynamic results;
   dynamic data;
 
-  BaseResponse(
-      { this.results});
+  BaseResponse({this.results});
 
-  factory BaseResponse.fromJson(Map<String, dynamic> json) {
-    return BaseResponse(
-        results: json);
+  factory BaseResponse.fromJson(json) {
+    return BaseResponse(results: json);
   }
 
   loadData(dynamic data) {

@@ -1,5 +1,8 @@
-import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 
+import 'package:ism_app/imports.dart';
+import 'package:ism_app/src/screens/login/model/login_data.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MyPreference {
   static add(String key, dynamic value, SharePrefType prefType) async {
@@ -30,7 +33,6 @@ class MyPreference {
     }
   }
 
-
   static Future<bool> removeKeyData(String key) async {
     SharedPreferences myPref = await SharedPreferences.getInstance();
     return await myPref.remove(key);
@@ -38,7 +40,7 @@ class MyPreference {
 
   static containsKey(key) async {
     SharedPreferences myPref = await SharedPreferences.getInstance();
-    return await myPref.containsKey(key);
+    return myPref.containsKey(key);
   }
 
   static Future<dynamic> clear() async {
@@ -46,6 +48,18 @@ class MyPreference {
     return await myPref.clear();
   }
 
+  static Future<LoginData> getLoginData() async {
+    SharedPreferences myPref = await SharedPreferences.getInstance();
+    var loginDetails = myPref.get(ApiConstant.LOGIN_DATA);
+    var jsonData = json.decode(loginDetails);
+    LoginData loginData = LoginData.fromJson(jsonData);
+    return loginData;
+  }
+
+  static Future<String> getAccessToken() async {
+    LoginData loginData = await getLoginData();
+    return loginData.accessToken;
+  }
 }
 
 enum SharePrefType {

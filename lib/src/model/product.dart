@@ -1,6 +1,8 @@
 import 'package:hive/hive.dart';
 
-@HiveType(typeId: 0)
+part 'product.g.dart';
+
+@HiveType(typeId: 6)
 class Product {
   @HiveField(0)
   String name;
@@ -14,6 +16,10 @@ class Product {
   int uomId;
   @HiveField(5)
   int id;
+  @HiveField(6)
+  bool isEdited;
+  @HiveField(7)
+  bool isSynced;
 
   Product(
       {this.name,
@@ -23,14 +29,14 @@ class Product {
       this.uom,
       this.uomId});
 
-  static List<Product> fromJson(List<Map<String, dynamic>> data) {
+  static List<Product> fromJson(List<dynamic> data) {
     return data
         .map((json) => Product(
               id: json['id'],
-              name: json['name'],
-              category: json['category'],
-              reference: json['reference'],
-              uom: json['uom'],
+              name: json['name'].toString(),
+              category: json['category'].toString(),
+              reference: json['reference'].toString(),
+              uom: json['uom'].toString(),
               uomId: json['uom_id'],
             ))
         .toList();

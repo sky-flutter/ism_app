@@ -1,4 +1,8 @@
 import 'package:hive/hive.dart';
+import 'package:ism_app/imports.dart';
+import 'package:path_provider/path_provider.dart';
+
+import 'package:ism_app/src/model/receipt_data.dart';
 
 class HiveService {
   static final HiveService instance = HiveService._internal();
@@ -11,24 +15,45 @@ class HiveService {
     return length != 0;
   }
 
+  Future<Box> openBox(String boxName) async{
+    return await Hive.openBox(boxName);
+  }
+
   addBoxes<T>(List<T> items, String boxName) async {
-    final openBox = await Hive.openBox(boxName);
+    final box = await openBox(boxName);
     items.forEach((element) {
-      openBox.add(element);
+      box.add(element);
     });
+  }
+
+  updateValue<T>(T value,int index,String boxName)async{
+    final box = await openBox(boxName);
+    return box.putAt(index, value);
   }
 
   Future<List<T>> getBoxes<T>(String boxName) async {
     List<T> boxList = [];
-    final openBox = await Hive.openBox(boxName);
-    int length = openBox.length;
+    final box = await openBox(boxName);
+    int length = box.length;
     for (int i = 0; i < length; i++) {
-      boxList.add(openBox.getAt(i));
+      boxList.add(box.getAt(i));
     }
     return boxList;
   }
 
   clear(String boxName) async {
     await (await Hive.openBox(boxName)).clear();
+  }
+
+  void setAdapter() async {
+    final appDirectory = await getApplicationDocumentsDirectory();
+    Hive
+      ..init(appDirectory.path)
+      ..registerAdapter(AllProductLotAdapter())
+      ..registerAdapter(ProductAdapter())
+      ..registerAdapter(LocationAdapter())
+      ..registerAdapter(ReceiptDataAdapter())
+      ..registerAdapter(MoveAdapter())
+      ..registerAdapter(MoveLineIdsAdapter());
   }
 }

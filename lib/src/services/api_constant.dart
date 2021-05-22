@@ -16,10 +16,12 @@ class ApiConstant {
   static String USERNAME = "username";
   static var PASSWORD = "password";
 
-  static String LANGUAGE_CODE="language_code";
+  static String LANGUAGE_CODE = "language_code";
 
-  static String IS_LOGIN="is_login";
-  static String LOGIN_DATA="login_data";
+  static String IS_LOGIN = "is_login";
+  static String LOGIN_DATA = "login_data";
+
+  static var PICKING_ID = "picking_ids";
 
   static String getApiEnvLabel() {
     if (appEnv == Environment.DEV) {
@@ -35,4 +37,9 @@ class ApiConstant {
   static var ENDPOINT_LOGIN = "auth/get_tokens";
   static var ENDPOINT_RECEIPTS = "receipts";
   static var ENDPOINT_USERS = "users";
+  static var ENDPOINT_ALL_PRODUCT = "product/all_product";
+  static var ENDPOINT_ALL_PRODUCT_LOT = "lot/all_product_lot";
+  static var ENDPOINT_ALL_PICKING = "picking/all_picking";
+  static var ENDPOINT_LOCATION = "location/all_location";
+  static var ENDPOINT_ACTION_VALIDATE = "picking_in/action_validate";
 }

@@ -15,5 +15,8 @@ export 'package:ism_app/src/services/api_constant.dart';
 export 'package:ism_app/src/services/db/hive_service.dart';
 export 'package:ism_app/src/bloc/base_state.dart';
 export 'package:ism_app/main.dart';
-
+export 'package:ism_app/src/model/all_product_lot.dart';
+export 'package:ism_app/src/model/location.dart';
+export 'package:ism_app/src/model/product.dart';
+export 'package:hive/hive.dart';
 

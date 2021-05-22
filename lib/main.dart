@@ -2,14 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
-import 'package:hive/hive.dart';
 import 'package:ism_app/imports.dart';
 import 'package:ism_app/src/bloc/bloc_observer.dart';
 import 'package:ism_app/src/notifier/app_language.dart';
-import 'package:ism_app/src/screens/receipts/model/users_data.dart';
 import 'package:ism_app/src/services/api_client.dart';
 import 'package:ism_app/src/theme/color.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 
 import 'generated/l10n.dart';
@@ -21,13 +18,9 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   AppLanguage appLanguage = AppLanguage();
   await appLanguage.fetchLocale();
-  final appDirectory = await getApplicationDocumentsDirectory();
   apiClient.setUpClient();
   Bloc.observer = MyBlocObserver();
-  Hive
-    ..init(appDirectory.path)
-    ..registerAdapter(UsersDataAdapter())
-    ..registerAdapter(UserItemDataAdapter());
+  HiveService.instance.setAdapter();
   runApp(MyApp(appLanguage: appLanguage));
 }
 

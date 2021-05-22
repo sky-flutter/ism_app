@@ -4,6 +4,7 @@ import 'package:dio/adapter.dart';
 import 'package:dio/dio.dart';
 import 'package:dio/src/headers.dart' as Headers;
 import 'package:flutter/foundation.dart';
+import 'package:ism_app/imports.dart';
 import 'package:ism_app/src/model/base_response.dart';
 import 'package:ism_app/src/services/error_code.dart';
 import 'package:ism_app/src/utils/preference.dart';
@@ -60,7 +61,7 @@ class ApiClient {
   }
 
   checkIsLogin() async {
-    var isContain = await MyPreference.containsKey(ApiConstant.ACCESS_TOKEN);
+    var isContain = await MyPreference.containsKey(ApiConstant.LOGIN_DATA);
     if (isContain) {
       authToken = await getAccessToken();
     } else {
@@ -78,7 +79,7 @@ class ApiClient {
       String token}) async {
     try {
       await checkIsLogin();
-      if (authToken != "") {
+      if (authToken != null && authToken != "") {
         headers = {
           ApiConstant.ACCESS_TOKEN: authToken,
         };
@@ -145,6 +146,8 @@ class ApiClient {
       } else if (e.type == DioErrorType.cancel) {
         statusCode = ErrorCode.REQUEST_CANCELLED;
       } else if (e.response.statusCode == ErrorCode.NOT_AUTHORIZED) {
+        await MyPreference.clear();
+        MyNavigator.pushReplacedNamed(Routes.strLoginRoute);
         statusCode = ErrorCode.NOT_AUTHORIZED;
       } else if (e.response.statusCode == ErrorCode.SESSION_EXPIRED) {
         statusCode = ErrorCode.SESSION_EXPIRED;
@@ -157,9 +160,10 @@ class ApiClient {
 
   getAccessToken() async {
     try {
-      return await MyPreference.get(
-          ApiConstant.ACCESS_TOKEN, SharePrefType.String);
-    } catch (e) {}
+      return await MyPreference.getAccessToken();
+    } catch (e) {
+      print("ERROR :: AccessToken :: $e");
+    }
   }
 }
 
