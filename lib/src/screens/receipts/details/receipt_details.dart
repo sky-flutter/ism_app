@@ -36,7 +36,8 @@ class _ReceiptDetailsState extends State<ReceiptDetails> {
     this.controller = controller;
     controller.scannedDataStream.listen((scanData) {
       controller.pauseCamera();
-      _receiptDetailsBloc.add(ReceiptDetailsEvent(scanData.code,widget.receiptData));
+      _receiptDetailsBloc
+          .add(ReceiptDetailsEvent(scanData.code, widget.receiptData));
     });
   }
 
@@ -134,12 +135,20 @@ class _ReceiptDetailsState extends State<ReceiptDetails> {
                   child: SingleChildScrollView(
                     child: Column(
                       children: [
+                        SizedBox(
+                          height: 27,
+                        ),
+                        ListItem(
+                            index: -1,
+                            receiptData: widget.receiptData,
+                            moveLine: null),
                         ListView.builder(
                           physics: ClampingScrollPhysics(),
                           itemBuilder: (context, index) {
                             return ListItem(
                                 index: index,
                                 receiptData: widget.receiptData,
+                                isProductData: true,
                                 moveLine:
                                     widget.receiptData.moveLineIds[index]);
                           },
@@ -180,8 +189,13 @@ class ListItem extends StatelessWidget {
   final int index;
   final ReceiptData receiptData;
   final MoveLineIds moveLine;
+  var isProductData = false;
 
-  ListItem({this.index, this.receiptData, this.moveLine});
+  ListItem(
+      {this.index,
+      this.receiptData,
+      this.moveLine,
+      this.isProductData = false});
 
   @override
   Widget build(BuildContext context) {
@@ -191,7 +205,7 @@ class ListItem extends StatelessWidget {
       child: MyItemContainer(
         margin: EdgeInsets.only(
           top: index == 0 ? 27 : 0,
-          bottom: 27,
+          bottom: index == -1 ? 0 : 27,
           left: 20,
           right: 20,
         ),
@@ -207,26 +221,30 @@ class ListItem extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     KeyItem(
-                      title: "Partner",
+                      title: isProductData ? "Product" : "Partner",
                       topMargin: 0,
                     ),
                     KeyItem(
-                      title: "Owner",
-                      isHidden: false,
+                      title: isProductData ? "Initial Demand" : "Owner",
                     ),
                     KeyItem(
-                      title: "[Access-Bur-00001] Modem",
-                      isHidden: false,
+                      title: isProductData
+                          ? "[Access-Bur-00001] Modem"
+                          : "Destination Location",
+                      isHidden: !isProductData,
                     ),
                     KeyItem(
-                      title: "Scheduled Date",
+                      title: isProductData ? "Done" : "Scheduled Date",
                     ),
                     KeyItem(
-                      title: "Document Source",
+                      title: isProductData
+                          ? "Units of measure"
+                          : "Document Source",
                     ),
-                    KeyItem(
-                      title: "Operation Branch",
-                    ),
+                    if (!isProductData)
+                      KeyItem(
+                        title: "Operation Branch",
+                      ),
                   ],
                 ),
                 decoration: BoxDecoration(
@@ -244,28 +262,48 @@ class ListItem extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     ValueItem(
-                      title: receiptData.partner ?? "Not Available",
+                      title: (isProductData
+                              ? moveLine.product
+                              : receiptData.partner) ??
+                          "Not Available",
                       topMargin: 0,
                       textColor: MyColors.color_F18719,
                     ),
                     ValueItem(
-                      title: "",
-                      isHidden: false,
+                      title: (isProductData
+                              ? moveLine.reservedQty.toStringAsFixed(0)
+                              : "") ??
+                          "",
+                      textColor: isProductData
+                          ? MyColors.color_F18719
+                          : MyColors.color_6E7578,
                     ),
                     ValueItem(
-                        title: receiptData.location,
-                        isHidden: false,
-                        textColor: MyColors.color_F18719),
+                        title:
+                            (isProductData ? "" : receiptData.location) ?? "",
+                        isHidden: !isProductData,
+                        textColor: isProductData
+                            ? MyColors.color_F18719
+                            : MyColors.color_F18719),
+                    ValueItem(
+                        title: (isProductData
+                                ? moveLine.quantityDone.toStringAsFixed(0)
+                                : "${parseDate(receiptData.date)} | ${parseTime(receiptData.date)}") ??
+                            "",
+                        textColor: isProductData
+                            ? MyColors.color_F18719
+                            : MyColors.color_6E7578),
                     ValueItem(
                         title:
-                            "${parseDate(receiptData.date)} | ${parseTime(receiptData.date)}",
-                        textColor: MyColors.color_6E7578),
-                    ValueItem(
-                        title: receiptData.origin,
-                        textColor: MyColors.color_6E7578),
-                    ValueItem(
-                        title: receiptData.location,
-                        textColor: MyColors.color_F18719),
+                            (isProductData ? "Unit(s)" : receiptData.origin) ??
+                                "",
+                        textColor: isProductData
+                            ? MyColors.color_F18719
+                            : MyColors.color_6E7578),
+                    if (!isProductData)
+                      ValueItem(
+                          title: "Not Available",
+                          textColor: MyColors.color_F18719),
                   ],
                 ),
                 padding: const EdgeInsets.only(

@@ -9,7 +9,7 @@ import 'package:ism_app/src/screens/receipts/operation/bloc/operation_event.dart
 import 'package:ism_app/src/widgets/button/button_solid.dart';
 import 'package:ism_app/src/widgets/container/container.dart';
 import 'package:ism_app/src/widgets/container/item_container.dart';
-import 'package:ism_app/src/widgets/loading/loader.dart';
+import 'package:ism_app/src/widgets/dialog/dialog.dart';
 
 class DetailOperations extends StatefulWidget {
   ReceiptData receiptData;
@@ -46,12 +46,13 @@ class _DetailOperationsState extends State<DetailOperations> {
       child: BlocListener<OperationBloc, BaseState>(
         listener: (BuildContext context, state) {
           if (state is LoadingState) {
-            Get.dialog(Loader(), barrierDismissible: false);
+            showProgressDialog();
           }
           if (state is DataState) {
             if (Get.isDialogOpen) {
               Get.back();
             }
+            Get.back();
             showSnackBar("Success", state.data, color: Colors.green);
           }
 
@@ -59,6 +60,7 @@ class _DetailOperationsState extends State<DetailOperations> {
             if (Get.isDialogOpen) {
               Get.back();
             }
+            Get.back();
             showSnackBar(S.of(context).error, state.errorMessage);
           }
         },

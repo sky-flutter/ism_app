@@ -12,3 +12,15 @@ class Loader extends StatelessWidget {
     );
   }
 }
+
+class ProgressLoading extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 56,
+      height: 56,
+      decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white),
+      child: Loader(),
+    );
+  }
+}

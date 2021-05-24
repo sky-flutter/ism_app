@@ -29,10 +29,11 @@ class ReceiptsBloc extends BaseBloc<BaseEvent, BaseState> {
   Stream<BaseState> getReceiptData() async* {
     try {
       yield LoadingState();
-      if (isConnectionAvailable()) {
+      if (await isConnectionAvailable()) {
         var response =
             await apiClient.call(url: ApiConstant.ENDPOINT_ALL_PICKING);
         if (response is BaseResponse) {
+          print("RESPONSE ::: ${response.results.toString()}");
           List<ReceiptData> listReceiptData =
               ReceiptData.fromJson(response.results);
           await addDataToDatabase<ReceiptData>(
@@ -57,7 +58,7 @@ class ReceiptsBloc extends BaseBloc<BaseEvent, BaseState> {
           await getCachedDataFuture<ReceiptData>(boxNameReceiptData);
     }
     var data = listReceiptData
-        .where((element) => element.internalType.toLowerCase() == "receipt")
+        .where((element) => element.type.toLowerCase() == "incoming")
         .toList();
 
     if (data != null) {
@@ -73,7 +74,7 @@ class ReceiptsBloc extends BaseBloc<BaseEvent, BaseState> {
           await getCachedDataFuture<ReceiptData>(boxNameReceiptData);
     }
     var data = listReceiptData
-        .where((element) => element.type.toLowerCase() == "incoming")
+        .where((element) => element.internalType.toLowerCase() == "receipt")
         .toList();
 
     if (data != null) {

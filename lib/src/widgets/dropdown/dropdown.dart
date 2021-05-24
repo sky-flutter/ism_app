@@ -21,6 +21,7 @@ class _MyDropDownState<T> extends State<MyDropDown> {
   Widget build(BuildContext context) {
     return DropdownButton(
       isExpanded: false,
+      icon: Container(),
       underline: widget.underline ?? Container(),
       items: widget.data
           .map<DropdownMenuItem<T>>((e) => DropdownMenuItem(

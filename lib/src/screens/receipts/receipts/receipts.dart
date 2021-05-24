@@ -8,6 +8,7 @@ import 'package:ism_app/src/widgets/container/container.dart';
 import 'package:ism_app/src/widgets/container/container_shadow.dart';
 import 'package:ism_app/src/widgets/container/item_container.dart';
 import 'package:ism_app/src/widgets/input/text_field_icon.dart';
+import 'package:rxdart/rxdart.dart';
 
 import 'bloc/receipt_event.dart';
 import 'bloc/receipts_bloc.dart';
@@ -23,14 +24,21 @@ class Receipts extends StatefulWidget {
 
 class _ReceiptsState extends State<Receipts>
     with SingleTickerProviderStateMixin {
+  final searchOnChange = new BehaviorSubject<String>();
   TabController tabController;
   int tabIndex = 0;
   ReceiptsBloc _receiptsBloc;
   PageController pageController;
   List<ReceiptData> listReceiptData = [];
   List<ReceiptData> listIncomingData = [];
+  List<ReceiptData> listReceiptDataCopy = [];
+  List<ReceiptData> listIncomingDataCopy = [];
   var tabTextStyle =
       Style.normal.copyWith(fontWeight: FontWeight.bold, fontSize: 14);
+  DateTime dateTime = DateTime.now();
+
+  TextEditingController ctrlSearchReceiptData = TextEditingController();
+  TextEditingController ctrlSearchIncomingData = TextEditingController();
 
   @override
   void initState() {
@@ -45,13 +53,23 @@ class _ReceiptsState extends State<Receipts>
     _receiptsBloc.getCachedReceiptData().listen((event) {
       if (event is ReceiptDataState) {
         listReceiptData = event.data;
+        listReceiptDataCopy = event.data;
         setState(() {});
       }
     });
     _receiptsBloc.getCachedIncomingData().listen((event) {
       if (event is IncomingDataState) {
+        listIncomingDataCopy = event.data;
         listIncomingData = event.data;
         setState(() {});
+      }
+    });
+
+    searchOnChange.debounceTime(Duration(seconds: 1)).listen((event) {
+      if (event.isNotEmpty) {
+        search(event);
+      } else {
+        clearSearchData();
       }
     });
   }
@@ -59,6 +77,10 @@ class _ReceiptsState extends State<Receipts>
   _onTabChange(int index) {
     pageController.jumpToPage(index);
     tabController.animateTo(index);
+  }
+
+  _onSearchTextChanged(String str) {
+    searchOnChange.add(str);
   }
 
   @override
@@ -91,7 +113,7 @@ class _ReceiptsState extends State<Receipts>
                   child: Text("RECEIPTS"),
                 ),
                 Tab(
-                  child: Text("INCOMING"),
+                  child: Text("INTERNAL"),
                 ),
               ],
               controller: tabController,
@@ -108,27 +130,6 @@ class _ReceiptsState extends State<Receipts>
           bgColor: MyColors.color_F8FAFB,
           children: Column(
             children: [
-              MyTextFieldPrefixSuffix(
-                hint: Strings.search,
-                margin: const EdgeInsets.only(left: 20, right: 20, top: 26),
-                outlineColor: MyColors.color_E2E9EF,
-                keyboardType: TextInputType.text,
-                suffix: Container(
-                  margin: const EdgeInsets.only(right: 19),
-                  child: GestureDetector(
-                    onTap: () {},
-                    child: Icon(Icons.filter_alt_outlined),
-                  ),
-                ),
-                focusedColor: MyColors.color_F18719,
-                prefix: Container(
-                  child: Icon(
-                    Icons.search,
-                    color: MyColors.color_3F4446,
-                  ),
-                  margin: EdgeInsets.only(left: 19),
-                ),
-              ),
               Expanded(
                 child: PageView(
                   onPageChanged: (int index) {
@@ -136,30 +137,90 @@ class _ReceiptsState extends State<Receipts>
                   },
                   controller: pageController,
                   children: [
-                    ListView.builder(
-                      itemBuilder: (context, index) {
-                        return InkWell(
-                          borderRadius: MyBorder.commonBorderRadius(),
-                          onTap: () {
-                            Get.to(
-                                () => ReceiptDetails(listReceiptData[index]));
-                          },
-                          child: ListItem(
-                            index: index,
-                            receiptData: listReceiptData[index],
+                    Column(
+                      children: [
+                        MyTextFieldPrefixSuffix(
+                          hint: Strings.search,
+                          controller: ctrlSearchReceiptData,
+                          margin: const EdgeInsets.only(
+                              left: 20, right: 20, top: 26),
+                          outlineColor: MyColors.color_E2E9EF,
+                          keyboardType: TextInputType.text,
+                          onChanged: _onSearchTextChanged,
+                          suffix: Container(
+                            margin: const EdgeInsets.only(right: 19),
+                            child: GestureDetector(
+                              onTap: () {},
+                              child: Icon(Icons.filter_alt_outlined),
+                            ),
                           ),
-                        );
-                      },
-                      itemCount: listReceiptData.length,
+                          focusedColor: MyColors.color_F18719,
+                          prefix: Container(
+                            child: Icon(
+                              Icons.search,
+                              color: MyColors.color_3F4446,
+                            ),
+                            margin: EdgeInsets.only(left: 19),
+                          ),
+                        ),
+                        Expanded(
+                          child: ListView.builder(
+                            itemBuilder: (context, index) {
+                              return InkWell(
+                                borderRadius: MyBorder.commonBorderRadius(),
+                                onTap: () {
+                                  Get.to(() =>
+                                      ReceiptDetails(listReceiptData[index]));
+                                },
+                                child: ListItem(
+                                  index: index,
+                                  receiptData: listReceiptData[index],
+                                ),
+                              );
+                            },
+                            itemCount: listReceiptData.length,
+                          ),
+                        ),
+                      ],
                     ),
-                    ListView.builder(
-                      itemBuilder: (context, index) {
-                        return ListItem(
-                          index: index,
-                          receiptData: listIncomingData[index],
-                        );
-                      },
-                      itemCount: listIncomingData.length,
+                    Column(
+                      children: [
+                        MyTextFieldPrefixSuffix(
+                          hint: Strings.search,
+                          controller: ctrlSearchIncomingData,
+                          margin: const EdgeInsets.only(
+                              left: 20, right: 20, top: 26),
+                          outlineColor: MyColors.color_E2E9EF,
+                          keyboardType: TextInputType.text,
+                          onChanged: _onSearchTextChanged,
+                          suffix: Container(
+                            margin: const EdgeInsets.only(right: 19),
+                            child: GestureDetector(
+                              onTap: () {},
+                              child: Icon(Icons.filter_alt_outlined),
+                            ),
+                          ),
+                          focusedColor: MyColors.color_F18719,
+                          prefix: Container(
+                            child: Icon(
+                              Icons.search,
+                              color: MyColors.color_3F4446,
+                            ),
+                            margin: EdgeInsets.only(left: 19),
+                          ),
+                        ),
+                        Expanded(
+                          child: ListView.builder(
+                            itemBuilder: (context, index) {
+                              return ListItem(
+                                index: index,
+                                receiptData: listIncomingData[index],
+                              );
+                            },
+                            itemCount: listIncomingData.length,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -169,6 +230,37 @@ class _ReceiptsState extends State<Receipts>
         ),
       ),
     );
+  }
+
+  void clearSearchData() {
+    if (tabController.index == 0) {
+      listReceiptData = listReceiptDataCopy;
+    } else {
+      listIncomingData = listIncomingDataCopy;
+    }
+    setState(() {});
+  }
+
+  void search(String search) async {
+    if (tabController.index == 0) {
+      listReceiptData = await filterSearchData(search, listReceiptDataCopy);
+    } else {
+      listIncomingData = await filterSearchData(search, listIncomingDataCopy);
+    }
+    setState(() {});
+  }
+
+  Future<List<ReceiptData>> filterSearchData(
+      String search, List<ReceiptData> listData) async {
+    search = search.toLowerCase();
+    return await Future.delayed(Duration(seconds: 1), () {
+      return listReceiptDataCopy
+          .where((element) =>
+              element.name.toLowerCase().contains(search) ||
+              element.origin.contains(search) ||
+              element.location.contains(search))
+          .toList();
+    });
   }
 }
 

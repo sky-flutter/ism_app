@@ -21,7 +21,7 @@ class LoginBloc extends BaseBloc<LoginEvent, BaseState> {
   Stream<BaseState> checkMobileNumber(event) async* {
     try {
       yield LoadingState();
-      if (isConnectionAvailable()) {
+      if (await isConnectionAvailable()) {
         Map<String, dynamic> params = HashMap();
         params[ApiConstant.USERNAME] = (event as LoginEvent).strEmail;
         params[ApiConstant.PASSWORD] = (event as LoginEvent).strPassword;

@@ -6,9 +6,12 @@ import 'package:ism_app/src/screens/home/bloc/home_bloc.dart';
 import 'package:ism_app/src/screens/home/bloc/home_event.dart';
 import 'package:ism_app/src/screens/home/model/menu_type.dart';
 import 'package:ism_app/src/screens/home/model/store_type.dart';
+import 'package:ism_app/src/screens/receipts/operation/bloc/operation_bloc.dart';
+import 'package:ism_app/src/screens/receipts/operation/bloc/operation_event.dart';
 import 'package:ism_app/src/screens/receipts/receipts/bloc/receipt_event.dart';
 import 'package:ism_app/src/screens/receipts/receipts/bloc/receipts_bloc.dart';
 import 'package:ism_app/src/screens/receipts/receipts/receipts.dart';
+import 'package:ism_app/src/services/error_code.dart';
 import 'package:ism_app/src/utils/error_handler.dart';
 import 'package:ism_app/src/widgets/container/container.dart';
 import 'package:ism_app/src/widgets/container/container_shadow.dart';
@@ -30,7 +33,7 @@ class _HomeState extends State<Home> {
   StoreType selectedValue;
   ReceiptsBloc receiptBloc;
   HomeBloc homeBloc;
-
+  OperationBloc _operationBloc;
   List<ReceiptData> listReceiptData;
   List<int> listCount = [0, 1, 3, -1];
 
@@ -38,21 +41,26 @@ class _HomeState extends State<Home> {
   void initState() {
     super.initState();
     homeBloc = HomeBloc();
+    _operationBloc = OperationBloc();
+    _operationBloc.add(ValidateOfflineReceiptDataEvent());
     receiptBloc = ReceiptsBloc();
+    createStoreType();
+    createMenuType();
+  }
+
+  getMasterData() {
     homeBloc.add(GetAllProductLotEvent());
     homeBloc.add(GetAllProductEvent());
     homeBloc.add(GetLocationEvent());
     receiptBloc.add(GetAllReceiptsEvent());
-    createStoreType();
-    createMenuType();
   }
 
   createStoreType() {
     storeType = [];
     storeType.add(StoreType("Warehouse"));
-    storeType.add(StoreType("Purchase"));
-    storeType.add(StoreType("Sales"));
-    storeType.add(StoreType("Marketing"));
+    // storeType.add(StoreType("Purchase"));
+    // storeType.add(StoreType("Sales"));
+    // storeType.add(StoreType("Marketing"));
     selectedValue = storeType[0];
   }
 
@@ -94,6 +102,9 @@ class _HomeState extends State<Home> {
         BlocProvider<ReceiptsBloc>(
           create: (BuildContext context) => receiptBloc,
         ),
+        BlocProvider<OperationBloc>(
+          create: (BuildContext context) => _operationBloc,
+        ),
       ],
       child: MultiBlocListener(
         listeners: [
@@ -101,6 +112,22 @@ class _HomeState extends State<Home> {
             if (state is DataState) {
               listReceiptData = state.data;
               countReceiptData();
+            }
+          }),
+          BlocListener<OperationBloc, BaseState>(listener: (context, state) {
+            if (state is DataState) {
+              getMasterData();
+            }
+            if (state is ErrorState) {
+              if (state.errorCode == ErrorCode.SERVER_DOWN) {
+                getMasterData();
+              } else {
+                showSnackBar(
+                    S.of(context).error,
+                    state.errorMessage ??
+                        ErrorHandler.getErrorMessage(state.errorCode) ??
+                        "");
+              }
             }
           })
         ],
@@ -135,21 +162,24 @@ class _HomeState extends State<Home> {
         children: SingleChildScrollView(
           child: Column(
             children: [
-              Align(
-                alignment: Alignment.topRight,
-                child: MyShadowContainer(
-                  margin: const EdgeInsets.only(top: 18, right: 17),
-                  padding: const EdgeInsets.only(left: 16, right: 16),
-                  child: MyDropDown<StoreType>(
-                    storeType,
-                    selectedValue,
-                    onChangeListener: (data) {
-                      selectedValue = data;
-                      setState(() {});
-                    },
+              AbsorbPointer(
+                absorbing: true,
+                child: Align(
+                  alignment: Alignment.topRight,
+                  child: MyShadowContainer(
+                    margin: const EdgeInsets.only(top: 18, right: 17),
+                    padding: const EdgeInsets.only(left: 16, right: 16),
+                    child: MyDropDown<StoreType>(
+                      storeType,
+                      selectedValue,
+                      onChangeListener: (data) {
+                        selectedValue = data;
+                        setState(() {});
+                      },
+                    ),
+                    borderRadius: BorderRadius.circular(90),
+                    shadowColor: Color(0x0A0F3712),
                   ),
-                  borderRadius: BorderRadius.circular(90),
-                  shadowColor: Color(0x0A0F3712),
                 ),
               ),
               ListView.builder(
@@ -186,10 +216,15 @@ class _HomeState extends State<Home> {
   }
 
   void countReceiptData() {
-    int receiptCount = listReceiptData
-        .where((element) => element.internalType.toLowerCase() == "receipt")
-        .toList()
-        .length;
+    int receiptCount = 0;
+    listReceiptData.forEach((element) {
+      if (element.type.toLowerCase() == "internal" &&
+          element.internalType.toLowerCase() == "receipt") {
+        receiptCount += 1;
+      } else if (element.type.toLowerCase() == "incoming") {
+        receiptCount += 1;
+      } else {}
+    });
     listCount[0] = receiptCount;
     setState(() {});
   }

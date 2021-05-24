@@ -17,6 +17,7 @@ class MyTextFieldPrefixSuffix extends StatefulWidget {
   TextInputType keyboardType;
   OnFocusListener onFocusListener;
   TextEditingController controller;
+  Function onChanged, onEditingComplete;
   bool isObscureText;
 
   MyTextFieldPrefixSuffix(
@@ -26,6 +27,8 @@ class MyTextFieldPrefixSuffix extends StatefulWidget {
       this.margin,
       this.controller,
       this.onFocusListener,
+      this.onChanged,
+      this.onEditingComplete,
       this.padding,
       this.suffix,
       this.isObscureText = false,
@@ -48,7 +51,9 @@ class _MyTextFieldPrefixSuffixState extends State<MyTextFieldPrefixSuffix> {
     _focusNode.addListener(() {
       isFocused = _focusNode.hasFocus;
       setState(() {});
-      widget.onFocusListener.call(isFocused);
+      if (widget.onFocusListener != null) {
+        widget.onFocusListener.call(isFocused);
+      }
     });
   }
 
@@ -80,6 +85,8 @@ class _MyTextFieldPrefixSuffixState extends State<MyTextFieldPrefixSuffix> {
             child: TextField(
               focusNode: _focusNode,
               controller: widget.controller,
+              onChanged: widget.onChanged,
+              onEditingComplete: widget.onEditingComplete,
               keyboardType: widget.keyboardType,
               obscureText: widget.isObscureText,
               decoration: InputDecoration(

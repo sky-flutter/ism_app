@@ -33,7 +33,7 @@ class HomeBloc extends BaseBloc<BaseEvent, BaseState> {
   Stream<BaseState> getAllProductData() async* {
     try {
       yield LoadingState();
-      if (isConnectionAvailable()) {
+      if (await isConnectionAvailable()) {
         var response =
             await apiClient.call(url: ApiConstant.ENDPOINT_ALL_PRODUCT);
         if (response is BaseResponse) {
@@ -46,7 +46,7 @@ class HomeBloc extends BaseBloc<BaseEvent, BaseState> {
               errorMessage: (response as ErrorResponse).errorMessage);
         }
       } else {
-        yield* getCachedData<AllProductLot>(boxNameProduct);
+        yield* getCachedData<Product>(boxNameProduct);
       }
     } catch (e) {
       yield ErrorState(errorCode: ErrorCode.SERVER_DOWN);
@@ -56,7 +56,7 @@ class HomeBloc extends BaseBloc<BaseEvent, BaseState> {
   Stream<BaseState> getLocationData() async* {
     try {
       yield LoadingState();
-      if (isConnectionAvailable()) {
+      if (await isConnectionAvailable()) {
         var response = await apiClient.call(url: ApiConstant.ENDPOINT_LOCATION);
         if (response is BaseResponse) {
           List<Location> location = Location.fromJson(response.results);
@@ -68,7 +68,7 @@ class HomeBloc extends BaseBloc<BaseEvent, BaseState> {
               errorMessage: (response as ErrorResponse).errorMessage);
         }
       } else {
-        yield* getCachedData<AllProductLot>(boxNameLocation);
+        yield* getCachedData<Location>(boxNameLocation);
       }
     } catch (e) {
       yield ErrorState(errorCode: ErrorCode.SERVER_DOWN);
@@ -78,7 +78,7 @@ class HomeBloc extends BaseBloc<BaseEvent, BaseState> {
   Stream<BaseState> getAllProductLotData() async* {
     try {
       yield LoadingState();
-      if (isConnectionAvailable()) {
+      if (await isConnectionAvailable()) {
         var response =
             await apiClient.call(url: ApiConstant.ENDPOINT_ALL_PRODUCT_LOT);
         if (response is BaseResponse) {

@@ -14,12 +14,13 @@ abstract class BaseBloc<E, S> extends Bloc<E, S> {
     subscription = Connectivity()
         .onConnectivityChanged
         .listen((ConnectivityResult result) {
-      this.result = result;
+      // this.result = result;
     });
   }
 
-  bool isConnectionAvailable() {
-    return result != ConnectivityResult.none;
+  Future<bool> isConnectionAvailable() async{
+    var result = await Connectivity().checkConnectivity();
+    return result != null && result != ConnectivityResult.none;
   }
 
   addDataToDatabase<T>(String boxName, List<T> data) async {
@@ -28,11 +29,15 @@ abstract class BaseBloc<E, S> extends Bloc<E, S> {
   }
 
   Stream<BaseState> getCachedData<T>(String boxName) async* {
-    var data = await hiveService.getBoxes<T>(boxName);
-    if (data != null && data.isNotEmpty) {
-      yield DataState<List<T>>(data);
-    } else {
-      yield ErrorState(errorCode: ErrorCode.NO_INTERNET_CONNECTION);
+    try{
+      var data = await hiveService.getBoxes<T>(boxName);
+      if (data != null && data.isNotEmpty) {
+        yield DataState<List<T>>(data);
+      } else {
+        yield ErrorState(errorCode: ErrorCode.NO_INTERNET_CONNECTION);
+      }
+    }catch(e){
+      yield ErrorState(errorCode: ErrorCode.REQUEST_CANCELLED);
     }
   }
 
