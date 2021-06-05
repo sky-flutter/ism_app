@@ -6,10 +6,11 @@ class MyShadowContainer extends StatelessWidget {
   EdgeInsets margin, padding;
   BorderRadius borderRadius;
   Color shadowColor;
-
+  Alignment alignment;
   MyShadowContainer(
       {this.child,
       this.margin,
+      this.alignment,
       this.shadowColor = MyColors.color_FFFFFF,
       this.padding,
       this.borderRadius,
@@ -20,6 +21,7 @@ class MyShadowContainer extends StatelessWidget {
     return Container(
       margin: margin,
       padding: padding,
+      alignment: alignment,
       decoration:
           BoxDecoration(color: bgColor, borderRadius: borderRadius, boxShadow: [
         BoxShadow(

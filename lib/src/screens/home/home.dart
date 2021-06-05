@@ -57,37 +57,34 @@ class _HomeState extends State<Home> {
 
   createStoreType() {
     storeType = [];
-    storeType.add(StoreType("Warehouse"));
-    // storeType.add(StoreType("Purchase"));
-    // storeType.add(StoreType("Sales"));
-    // storeType.add(StoreType("Marketing"));
+    storeType.add(StoreType(S.current.warehouse));
     selectedValue = storeType[0];
   }
 
   createMenuType() {
     menuType = [];
     menuType.add(MenuType(
-        typeTitle: "Receipts",
-        typeSubTitle: "Warehouse Afrobio",
-        received: "to Receive",
+        typeTitle: S.current.receipts,
+        typeSubTitle: S.current.warehouse_afrobio,
+        received: S.current.to_receive,
         routeName: Routes.strReceiptsRoute,
         imagePath: Strings.icReceipt));
 
     menuType.add(MenuType(
-        typeTitle: "Internal Transfers",
-        typeSubTitle: "Warehouse Afrobio",
-        received: "Transfer",
+        typeTitle: S.current.internal_transfer,
+        typeSubTitle: S.current.warehouse_afrobio,
+        received: S.current.transfer,
         imagePath: Strings.icInternalTransfer));
 
     menuType.add(MenuType(
-        typeTitle: "Delivery Order",
-        typeSubTitle: "Warehouse Afrobio",
-        received: "To Do",
+        typeTitle: S.current.delivery_order,
+        typeSubTitle: S.current.warehouse_afrobio,
+        received: S.current.to_do,
         imagePath: Strings.icDeliveryOrder));
 
     menuType.add(MenuType(
-        typeTitle: "Inventory Modules",
-        typeSubTitle: "Warehouse Afrobio",
+        typeTitle: S.current.inventory_modules,
+        typeSubTitle: S.current.warehouse_afrobio,
         received: "",
         imagePath: Strings.icInventoryModule));
   }
@@ -123,10 +120,7 @@ class _HomeState extends State<Home> {
                 getMasterData();
               } else {
                 showSnackBar(
-                    S.of(context).error,
-                    state.errorMessage ??
-                        ErrorHandler.getErrorMessage(state.errorCode) ??
-                        "");
+                    S.of(context).error, state.errorMessage ?? ErrorHandler.getErrorMessage(state.errorCode) ?? "");
               }
             }
           })
@@ -172,6 +166,7 @@ class _HomeState extends State<Home> {
                     child: MyDropDown<StoreType>(
                       storeType,
                       selectedValue,
+                      isExpanded: false,
                       onChangeListener: (data) {
                         selectedValue = data;
                         setState(() {});
@@ -189,8 +184,7 @@ class _HomeState extends State<Home> {
                       if (listReceiptData != null) {
                         Get.to(() => Receipts(listReceiptData));
                       } else {
-                        showSnackBar(
-                            "Loading", "Please wait until data loaded");
+                        showSnackBar(S.current.loading, S.current.please_wait_until_data_loaded);
                       }
                     }
                   }, count: listCount[index]);
@@ -205,9 +199,7 @@ class _HomeState extends State<Home> {
       );
     }
     if (state is ErrorState) {
-      return ErrorView(state.errorMessage ??
-          ErrorHandler.getErrorMessage(state.errorCode) ??
-          "");
+      return ErrorView(state.errorMessage ?? ErrorHandler.getErrorMessage(state.errorCode) ?? "");
     }
     if (state is LoadingState) {
       return Loader();
@@ -218,8 +210,7 @@ class _HomeState extends State<Home> {
   void countReceiptData() {
     int receiptCount = 0;
     listReceiptData.forEach((element) {
-      if (element.type.toLowerCase() == "internal" &&
-          element.internalType.toLowerCase() == "receipt") {
+      if (element.type.toLowerCase() == "internal" && element.internalType.toLowerCase() == "receipt") {
         receiptCount += 1;
       } else if (element.type.toLowerCase() == "incoming") {
         receiptCount += 1;
@@ -256,8 +247,7 @@ class ListItem extends StatelessWidget {
         children: Row(
           children: [
             Container(
-              margin: const EdgeInsets.only(
-                  top: 23, bottom: 23, left: 15, right: 12),
+              margin: const EdgeInsets.only(top: 23, bottom: 23, left: 15, right: 12),
               child: SvgPicture.asset(menuType.imagePath),
             ),
             Expanded(
@@ -286,8 +276,7 @@ class ListItem extends StatelessWidget {
                   shadowColor: MyColors.color_2FA1DB.withOpacity(.2),
                   bgColor: MyColors.color_2FA1DB,
                   margin: const EdgeInsets.only(right: 14),
-                  padding: const EdgeInsets.only(
-                      left: 13, top: 6, bottom: 5, right: 12),
+                  padding: const EdgeInsets.only(left: 13, top: 6, bottom: 5, right: 12),
                   borderRadius: BorderRadius.circular(50),
                   child: Center(
                     child: MyText(

@@ -18,7 +18,15 @@ class Location extends HiveObject {
   @HiveField(4)
   bool isSynced;
 
-  Location({this.name, this.displayName, this.id});
+  String data;
+
+  Location({
+    this.name,
+    this.displayName,
+    this.id,
+  }) {
+    data = displayName;
+  }
 
   static List<Location> fromJson(List<dynamic> data) {
     return data

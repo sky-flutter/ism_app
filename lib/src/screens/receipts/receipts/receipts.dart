@@ -22,8 +22,7 @@ class Receipts extends StatefulWidget {
   _ReceiptsState createState() => _ReceiptsState();
 }
 
-class _ReceiptsState extends State<Receipts>
-    with SingleTickerProviderStateMixin {
+class _ReceiptsState extends State<Receipts> with SingleTickerProviderStateMixin {
   final searchOnChange = new BehaviorSubject<String>();
   TabController tabController;
   int tabIndex = 0;
@@ -33,8 +32,7 @@ class _ReceiptsState extends State<Receipts>
   List<ReceiptData> listIncomingData = [];
   List<ReceiptData> listReceiptDataCopy = [];
   List<ReceiptData> listIncomingDataCopy = [];
-  var tabTextStyle =
-      Style.normal.copyWith(fontWeight: FontWeight.bold, fontSize: 14);
+  var tabTextStyle = Style.normal.copyWith(fontWeight: FontWeight.bold, fontSize: 14);
   DateTime dateTime = DateTime.now();
 
   TextEditingController ctrlSearchReceiptData = TextEditingController();
@@ -110,10 +108,10 @@ class _ReceiptsState extends State<Receipts>
               onTap: _onTabChange,
               tabs: [
                 Tab(
-                  child: Text("RECEIPTS"),
+                  child: Text(S.current.receipts_caps),
                 ),
                 Tab(
-                  child: Text("INTERNAL"),
+                  child: Text(S.current.internal),
                 ),
               ],
               controller: tabController,
@@ -142,8 +140,7 @@ class _ReceiptsState extends State<Receipts>
                         MyTextFieldPrefixSuffix(
                           hint: Strings.search,
                           controller: ctrlSearchReceiptData,
-                          margin: const EdgeInsets.only(
-                              left: 20, right: 20, top: 26),
+                          margin: const EdgeInsets.only(left: 20, right: 20, top: 26),
                           outlineColor: MyColors.color_E2E9EF,
                           keyboardType: TextInputType.text,
                           onChanged: _onSearchTextChanged,
@@ -169,8 +166,7 @@ class _ReceiptsState extends State<Receipts>
                               return InkWell(
                                 borderRadius: MyBorder.commonBorderRadius(),
                                 onTap: () {
-                                  Get.to(() =>
-                                      ReceiptDetails(listReceiptData[index]));
+                                  Get.to(() => ReceiptDetails(listReceiptData[index]));
                                 },
                                 child: ListItem(
                                   index: index,
@@ -188,8 +184,7 @@ class _ReceiptsState extends State<Receipts>
                         MyTextFieldPrefixSuffix(
                           hint: Strings.search,
                           controller: ctrlSearchIncomingData,
-                          margin: const EdgeInsets.only(
-                              left: 20, right: 20, top: 26),
+                          margin: const EdgeInsets.only(left: 20, right: 20, top: 26),
                           outlineColor: MyColors.color_E2E9EF,
                           keyboardType: TextInputType.text,
                           onChanged: _onSearchTextChanged,
@@ -232,6 +227,27 @@ class _ReceiptsState extends State<Receipts>
     );
   }
 
+  String displayStringForOption(ReceiptData option) {
+    search(option.name);
+    return option.name;
+  }
+
+  buildAutocomplete(List<ReceiptData> listData) {
+    return Autocomplete<ReceiptData>(
+      displayStringForOption: displayStringForOption,
+      optionsBuilder: (TextEditingValue textEditingValue) {
+        if (textEditingValue.text == '') {
+          return const Iterable<ReceiptData>.empty();
+        }
+        return listData.where((ReceiptData option) =>
+            option.name.toLowerCase().contains(textEditingValue.text.toLowerCase()) ||
+            option.origin.contains(textEditingValue.text.toLowerCase()) ||
+            option.location.contains(textEditingValue.text.toLowerCase()));
+      },
+      onSelected: (ReceiptData selection) {},
+    );
+  }
+
   void clearSearchData() {
     if (tabController.index == 0) {
       listReceiptData = listReceiptDataCopy;
@@ -250,8 +266,7 @@ class _ReceiptsState extends State<Receipts>
     setState(() {});
   }
 
-  Future<List<ReceiptData>> filterSearchData(
-      String search, List<ReceiptData> listData) async {
+  Future<List<ReceiptData>> filterSearchData(String search, List<ReceiptData> listData) async {
     search = search.toLowerCase();
     return await Future.delayed(Duration(seconds: 1), () {
       return listReceiptDataCopy
@@ -317,12 +332,11 @@ class ListItem extends StatelessWidget {
               shadowColor: MyColors.color_2FA1DB.withOpacity(.2),
               bgColor: MyColors.color_2FA1DB,
               margin: const EdgeInsets.only(right: 14),
-              padding:
-                  const EdgeInsets.only(left: 21, top: 6, bottom: 5, right: 21),
+              padding: const EdgeInsets.only(left: 21, top: 6, bottom: 5, right: 21),
               borderRadius: BorderRadius.circular(50),
               child: Center(
                 child: MyText(
-                  "Ready",
+                  S.current.ready,
                   color: MyColors.color_FFFFFF,
                   fontSize: 10,
                   fontWeight: FontWeight.normal,

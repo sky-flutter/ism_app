@@ -26,8 +26,7 @@ class OperationBloc extends BaseBloc<BaseEvent, BaseState> {
   }
 
   getReceiptData() async {
-    listReceiptData = await HiveService.instance
-        .getBoxes<ReceiptData>(ReceiptsBloc.boxNameReceiptData);
+    listReceiptData = await HiveService.instance.getBoxes<ReceiptData>(ReceiptsBloc.boxNameReceiptData);
   }
 
   Stream<BaseState> validateReceiptData(ValidateReceiptDataEvent event) async* {
@@ -40,8 +39,7 @@ class OperationBloc extends BaseBloc<BaseEvent, BaseState> {
     }
   }
 
-  Stream<BaseState> validateOfflineReceiptData(
-      ValidateOfflineReceiptDataEvent event) async* {
+  Stream<BaseState> validateOfflineReceiptData(ValidateOfflineReceiptDataEvent event) async* {
     if (await isConnectionAvailable()) {
       yield LoadingState();
       if (listReceiptData == null) {
@@ -66,10 +64,8 @@ class OperationBloc extends BaseBloc<BaseEvent, BaseState> {
     if (data != null) {
       Map<String, dynamic> params = HashMap();
       params[ApiConstant.PICKING_ID] = data;
-      var response = await apiClient.call(
-          url: ApiConstant.ENDPOINT_ACTION_VALIDATE,
-          params: params,
-          method: ApiMethod.POST);
+      var response =
+          await apiClient.call(url: ApiConstant.ENDPOINT_ACTION_VALIDATE, params: params, method: ApiMethod.POST);
       if (response is BaseResponse) {
         if (event is ValidateReceiptDataEvent) {
           clearAllStatus(event.receiptData);
@@ -81,8 +77,7 @@ class OperationBloc extends BaseBloc<BaseEvent, BaseState> {
         yield DataState<String>("Data saved successfully");
       } else {
         yield ErrorState(
-            errorCode: (response as ErrorResponse).statusCode,
-            errorMessage: (response as ErrorResponse).errorMessage);
+            errorCode: (response as ErrorResponse).statusCode, errorMessage: (response as ErrorResponse).errorMessage);
       }
     } else {
       yield ErrorState(errorMessage: "Lot not found");
@@ -114,21 +109,19 @@ class OperationBloc extends BaseBloc<BaseEvent, BaseState> {
     List<Map<String, dynamic>> listData = [];
     if (receiptData.isSynced != null && !receiptData.isSynced) {
       if (receiptData.isEdited != null && receiptData.isEdited) {
-        var moveLineIds = receiptData.moveLineIds
-            .where((e) => e.isEdited != null && e.isEdited)
-            .toList();
+        var moveLineIds = receiptData.moveLineIds.where((e) => e.isEdited != null && e.isEdited).toList();
         if (moveLineIds != null && moveLineIds.isNotEmpty) {
           List<Map<String, dynamic>> listMoveData = moveLineIds.map((e) {
             if (e.isEdited != null && e.isEdited) {
               Map<String, dynamic> data = HashMap();
-              data['product_qty'] = e.quantityDone.toInt();
-              data['product_id'] = e.productId;
-              data['lot'] = "${e.lot}";
+              data['quantity_done'] = e.quantityDone.toInt();
+              data['product_id'] = e.productUomId;
+              data['lot_number'] = int.parse(e.lot);
+              data['location_dest_id'] = e.toLocation?.id ?? "";
               return data;
             }
           }).toList();
-          listData.add(
-              {"picking_id": receiptData.id, "move_line_ids": listMoveData});
+          listData.add({"picking_id": receiptData.id, "move_line_ids": listMoveData});
 
           return json.encode(listData);
         }
@@ -146,7 +139,6 @@ class OperationBloc extends BaseBloc<BaseEvent, BaseState> {
     });
 
     var receiptIndexOf = listReceiptData.indexOf(receiptData);
-    await HiveService.instance.updateValue(
-        receiptData, receiptIndexOf, ReceiptsBloc.boxNameReceiptData);
+    await HiveService.instance.updateValue(receiptData, receiptIndexOf, ReceiptsBloc.boxNameReceiptData);
   }
 }

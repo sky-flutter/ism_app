@@ -8,7 +8,9 @@ import 'package:ism_app/src/screens/receipts/item/key_item.dart';
 import 'package:ism_app/src/screens/receipts/item/value_item.dart';
 import 'package:ism_app/src/screens/receipts/operation/detail_operation.dart';
 import 'package:ism_app/src/widgets/container/container.dart';
+import 'package:ism_app/src/widgets/container/container_shadow.dart';
 import 'package:ism_app/src/widgets/container/item_container.dart';
+import 'package:ism_app/src/widgets/dropdown/dropdown.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
 class ReceiptDetails extends StatefulWidget {
@@ -25,19 +27,31 @@ class _ReceiptDetailsState extends State<ReceiptDetails> {
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   bool isQRCameraShown = false;
   ReceiptDetailBloc _receiptDetailsBloc;
+  Location selectedLocation;
+
+  List<Location> listLocationData;
 
   @override
   void initState() {
     super.initState();
     _receiptDetailsBloc = ReceiptDetailBloc();
+    fetchLocation();
+  }
+
+  fetchLocation() async {
+    listLocationData = await _receiptDetailsBloc.getCachedLocationData();
+    selectedLocation = _receiptDetailsBloc.getSelectedLocation(widget.receiptData.destocationName);
+    if (selectedLocation == null) {
+      selectedLocation = listLocationData[0];
+    }
+    setState(() {});
   }
 
   void _onQRViewCreated(QRViewController controller) {
     this.controller = controller;
     controller.scannedDataStream.listen((scanData) {
       controller.pauseCamera();
-      _receiptDetailsBloc
-          .add(ReceiptDetailsEvent(scanData.code, widget.receiptData));
+      _receiptDetailsBloc.add(ReceiptDetailsEvent(scanData.code, widget.receiptData));
     });
   }
 
@@ -60,11 +74,13 @@ class _ReceiptDetailsState extends State<ReceiptDetails> {
             });
           }
           if (state is DataState) {
-            showSnackBar("Success", state.data, color: Colors.green);
+            setState(() {});
+
+            showSnackBar(S.current.success, state.data, color: Colors.green);
           }
 
           if (state is ErrorState) {
-            showSnackBar("Error", state.errorMessage);
+            showSnackBar(S.current.error, state.errorMessage);
           }
         },
         child: Scaffold(
@@ -80,15 +96,6 @@ class _ReceiptDetailsState extends State<ReceiptDetails> {
               },
             ),
             actions: [
-              IconButton(
-                icon: Icon(
-                  Icons.save,
-                  color: MyColors.color_FFFFFF,
-                ),
-                onPressed: () {
-                  Get.to(() => DetailOperations(widget.receiptData));
-                },
-              ),
               IconButton(
                 icon: Icon(
                   Icons.qr_code_scanner,
@@ -117,7 +124,7 @@ class _ReceiptDetailsState extends State<ReceiptDetails> {
                   child: Row(
                     children: [
                       MyText(
-                        "Warehouse Afrobio : Receipts | ",
+                        "${S.current.warehouse_afrobio} : ${S.current.receipts} | ",
                         fontWeight: FontWeight.w500,
                         color: MyColors.color_F18719,
                       ),
@@ -135,22 +142,35 @@ class _ReceiptDetailsState extends State<ReceiptDetails> {
                   child: SingleChildScrollView(
                     child: Column(
                       children: [
-                        SizedBox(
-                          height: 27,
-                        ),
-                        ListItem(
-                            index: -1,
-                            receiptData: widget.receiptData,
-                            moveLine: null),
+                        if (listLocationData != null)
+                          MyShadowContainer(
+                            borderRadius: BorderRadius.circular(90),
+                            alignment: Alignment.centerLeft,
+                            shadowColor: Color(0x0A0F3712),
+                            margin: const EdgeInsets.only(top: 27, bottom: 16, left: 16, right: 24),
+                            padding: const EdgeInsets.only(left: 16, right: 16),
+                            child: MyDropDown<Location>(
+                              listLocationData,
+                              selectedLocation,
+                              icon: Icon(Icons.arrow_drop_down_outlined),
+                              onChangeListener: (data) {
+                                selectedLocation = data;
+                                setState(() {});
+                              },
+                            ),
+                          ),
+                        ListItem(index: -1, receiptData: widget.receiptData, moveLine: null),
                         ListView.builder(
                           physics: ClampingScrollPhysics(),
                           itemBuilder: (context, index) {
                             return ListItem(
                                 index: index,
+                                onTap: () {
+                                  Get.to(() => DetailOperations(widget.receiptData));
+                                },
                                 receiptData: widget.receiptData,
                                 isProductData: true,
-                                moveLine:
-                                    widget.receiptData.moveLineIds[index]);
+                                moveLine: widget.receiptData.moveLineIds[index]);
                           },
                           primary: false,
                           shrinkWrap: true,
@@ -190,18 +210,17 @@ class ListItem extends StatelessWidget {
   final ReceiptData receiptData;
   final MoveLineIds moveLine;
   var isProductData = false;
+  Function onTap;
 
-  ListItem(
-      {this.index,
-      this.receiptData,
-      this.moveLine,
-      this.isProductData = false});
+  ListItem({this.index, this.receiptData, this.moveLine, this.onTap, this.isProductData = false});
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
       borderRadius: MyBorder.commonBorderRadius(),
-      onTap: () {},
+      onTap: () {
+        onTap?.call();
+      },
       child: MyItemContainer(
         margin: EdgeInsets.only(
           top: index == 0 ? 27 : 0,
@@ -211,110 +230,148 @@ class ListItem extends StatelessWidget {
         ),
         outlineColor: MyColors.color_E2E9EF,
         shadowColor: MyColors.color_0A0F3712,
-        children: Row(
+        children: Stack(
           children: [
-            Expanded(
-              child: Container(
-                padding: const EdgeInsets.only(
-                    left: 20, top: 20, bottom: 26, right: 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    KeyItem(
-                      title: isProductData ? "Product" : "Partner",
-                      topMargin: 0,
-                    ),
-                    KeyItem(
-                      title: isProductData ? "Initial Demand" : "Owner",
-                    ),
-                    KeyItem(
-                      title: isProductData
-                          ? "[Access-Bur-00001] Modem"
-                          : "Destination Location",
-                      isHidden: !isProductData,
-                    ),
-                    KeyItem(
-                      title: isProductData ? "Done" : "Scheduled Date",
-                    ),
-                    KeyItem(
-                      title: isProductData
-                          ? "Units of measure"
-                          : "Document Source",
-                    ),
-                    if (!isProductData)
-                      KeyItem(
-                        title: "Operation Branch",
+            Positioned.fill(
+              child: Row(
+                children: [
+                  Expanded(
+                    flex: 45,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: MyColors.color_E2E9EF,
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(10),
+                          bottomLeft: Radius.circular(10),
+                        ),
                       ),
-                  ],
-                ),
-                decoration: BoxDecoration(
-                    color: MyColors.color_E4E8EB,
-                    borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(9),
-                        bottomLeft: Radius.circular(9))),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 55,
+                    child: SizedBox(),
+                  ),
+                ],
               ),
-              flex: 5,
             ),
-            Expanded(
-              flex: 5,
-              child: Container(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    ValueItem(
-                      title: (isProductData
-                              ? moveLine.product
-                              : receiptData.partner) ??
-                          "Not Available",
-                      topMargin: 0,
-                      textColor: MyColors.color_F18719,
+            Container(
+              padding: const EdgeInsets.only(left: 20, top: 20, bottom: 26, right: 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        flex: 45,
+                        child: KeyItem(
+                          title: isProductData ? S.current.product : S.current.partner,
+                          topMargin: 0,
+                        ),
+                      ),
+                      Expanded(
+                        child: Container(),
+                        flex: 05,
+                      ),
+                      Expanded(
+                        flex: 50,
+                        child: ValueItem(
+                          title: (isProductData ? moveLine.product : receiptData.partner) ?? "Not Available",
+                          topMargin: 0,
+                          textColor: MyColors.color_F18719,
+                        ),
+                      ),
+                    ],
+                  ),
+                  if (!isProductData)
+                    Row(
+                      children: [
+                        Expanded(
+                          flex: 45,
+                          child: KeyItem(
+                            title: S.current.initial_demand,
+                          ),
+                        ),
+                        Expanded(
+                          child: Container(),
+                          flex: 05,
+                        ),
+                        Expanded(
+                          flex: 50,
+                          child: ValueItem(
+                            title: moveLine?.reservedQty?.toStringAsFixed(0) ?? "0",
+                            textColor: isProductData ? MyColors.color_F18719 : MyColors.color_6E7578,
+                          ),
+                        ),
+                      ],
                     ),
-                    ValueItem(
-                      title: (isProductData
-                              ? moveLine.reservedQty.toStringAsFixed(0)
-                              : "") ??
-                          "",
-                      textColor: isProductData
-                          ? MyColors.color_F18719
-                          : MyColors.color_6E7578,
-                    ),
-                    ValueItem(
-                        title:
-                            (isProductData ? "" : receiptData.location) ?? "",
-                        isHidden: !isProductData,
-                        textColor: isProductData
-                            ? MyColors.color_F18719
-                            : MyColors.color_F18719),
-                    ValueItem(
-                        title: (isProductData
-                                ? moveLine.quantityDone.toStringAsFixed(0)
-                                : "${parseDate(receiptData.date)} | ${parseTime(receiptData.date)}") ??
-                            "",
-                        textColor: isProductData
-                            ? MyColors.color_F18719
-                            : MyColors.color_6E7578),
-                    ValueItem(
-                        title:
-                            (isProductData ? "Unit(s)" : receiptData.origin) ??
+                  Row(
+                    children: [
+                      Expanded(
+                        flex: 45,
+                        child: KeyItem(
+                          title: isProductData ? S.current.access_bur_00001_modem : S.current.destination_location,
+                          isHidden: !isProductData,
+                        ),
+                      ),
+                      Expanded(
+                        child: Container(),
+                        flex: 05,
+                      ),
+                      Expanded(
+                        flex: 50,
+                        child: ValueItem(
+                            title: (isProductData ? "" : receiptData.destocationName) ?? "",
+                            isHidden: !isProductData,
+                            textColor: isProductData ? MyColors.color_F18719 : MyColors.color_F18719),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Expanded(
+                        flex: 45,
+                        child: KeyItem(
+                          title: isProductData ? S.current.done : S.current.scheduled_date,
+                        ),
+                      ),
+                      Expanded(
+                        child: Container(),
+                        flex: 05,
+                      ),
+                      Expanded(
+                        flex: 50,
+                        child: ValueItem(
+                            title: (isProductData
+                                    ? moveLine?.quantityDone?.toStringAsFixed(0)??"0"
+                                    : "${parseDate(receiptData.date)} | ${parseTime(receiptData.date)}") ??
                                 "",
-                        textColor: isProductData
-                            ? MyColors.color_F18719
-                            : MyColors.color_6E7578),
-                    if (!isProductData)
-                      ValueItem(
-                          title: "Not Available",
-                          textColor: MyColors.color_F18719),
-                  ],
-                ),
-                padding: const EdgeInsets.only(
-                    left: 20, top: 20, bottom: 26, right: 16),
-                decoration: BoxDecoration(
-                    color: MyColors.color_FFFFFF,
-                    borderRadius: BorderRadius.only(
-                        topRight: Radius.circular(30),
-                        bottomRight: Radius.circular(10))),
+                            textColor: isProductData ? MyColors.color_F18719 : MyColors.color_6E7578),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Expanded(
+                        flex: 45,
+                        child: KeyItem(
+                          title: isProductData ? S.current.units_of_measure : S.current.document_source,
+                        ),
+                      ),
+                      Expanded(
+                        child: Container(),
+                        flex: 05,
+                      ),
+                      Expanded(
+                        flex: 50,
+                        child: ValueItem(
+                            title: (isProductData ? S.current.units : receiptData.origin) ?? "",
+                            textColor: isProductData ? MyColors.color_F18719 : MyColors.color_6E7578),
+                      ),
+                    ],
+                  ),
+                ],
               ),
-            ),
+            )
           ],
         ),
       ),

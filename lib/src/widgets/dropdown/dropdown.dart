@@ -5,11 +5,12 @@ typedef OnChangeListener = Function(dynamic data);
 class MyDropDown<T> extends StatefulWidget {
   List<T> data;
   T selectedValue;
-  Widget underline;
+  Widget underline,icon;
+  bool isExpanded;
   OnChangeListener onChangeListener;
 
   MyDropDown(this.data, this.selectedValue,
-      {this.onChangeListener, this.underline})
+      {this.onChangeListener, this.underline, this.icon,this.isExpanded=true})
       : assert(data != null && data.length > 0);
 
   @override
@@ -20,8 +21,8 @@ class _MyDropDownState<T> extends State<MyDropDown> {
   @override
   Widget build(BuildContext context) {
     return DropdownButton(
-      isExpanded: false,
-      icon: Container(),
+      isExpanded: widget.isExpanded,
+      icon: widget.icon??Container(),
       underline: widget.underline ?? Container(),
       items: widget.data
           .map<DropdownMenuItem<T>>((e) => DropdownMenuItem(
@@ -30,8 +31,9 @@ class _MyDropDownState<T> extends State<MyDropDown> {
                   child: MyText(
                     e.data,
                     fontSize: 16,
+                    maxLines: 4,
                   ),
-                  padding: EdgeInsets.only(right: 48),
+                  padding: EdgeInsets.only(right: 8),
                 ),
               ))
           .toList(),

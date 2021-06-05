@@ -1,6 +1,6 @@
 export 'package:flutter/material.dart';
 export 'package:ism_app/src/theme/color.dart';
-export 'package:ism_app/src/theme/strings.dart';
+export 'file:///C:/Users/Aakash-PC/Downloads/Projects/My/ISMApp/ism_app/lib/src/utils/strings.dart';
 export 'package:ism_app/src/utils/navigator.dart';
 export 'package:ism_app/src/utils/routes.dart';
 export 'package:ism_app/src/utils/utils.dart';

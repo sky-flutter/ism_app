@@ -7,10 +7,12 @@ import 'package:ism_app/src/screens/receipts/operation/detail_operation.dart';
 import 'file:///C:/Users/Aakash-PC/Downloads/Projects/My/ISMApp/ism_app/lib/src/screens/receipts/receipts/receipts.dart';
 import 'file:///C:/Users/Aakash-PC/Downloads/Projects/My/ISMApp/ism_app/lib/src/screens/splash/splash_screen.dart';
 import 'file:///C:/Users/Aakash-PC/Downloads/Projects/My/ISMApp/ism_app/lib/src/screens/receipts/details/receipt_details.dart';
+import 'package:ism_app/src/screens/urlsetting/enter_base_url.dart';
 
 class Routes {
   static const String strSplashScreenRoute = "splash_screen";
   static const String strLoginRoute = "login";
+  static const String strApiURLRoute = "base_url";
   static const String strHomeRoute = "home";
   static const String strReceiptsRoute = "receipts";
   static const String strReceiptDetailsRoute = "receipts_details";
@@ -20,6 +22,7 @@ class Routes {
     Map<String, WidgetBuilder> routes = HashMap();
     routes[Routes.strSplashScreenRoute] = (context) => SplashScreen();
     routes[Routes.strLoginRoute] = (context) => Login();
+    routes[Routes.strApiURLRoute] = (context) => EnterBaseURL();
     routes[Routes.strHomeRoute] = (context) => Home();
     routes[Routes.strReceiptsRoute] = (context) => Receipts(null);
     routes[Routes.strReceiptDetailsRoute] = (context) => ReceiptDetails(null);

@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:ism_app/imports.dart';
 
 part 'receipt_data.g.dart';
 
@@ -33,6 +34,8 @@ class ReceiptData {
   bool isSynced;
   @HiveField(13)
   var partner;
+  @HiveField(14)
+  var destocationName;
 
   // @HiveField(10)
   // String partner;
@@ -45,6 +48,7 @@ class ReceiptData {
     this.id,
     // this.partnerId,
     this.move,
+    this.destocationName,
     this.type,
     this.internalType,
     this.location,
@@ -71,6 +75,7 @@ class ReceiptData {
         name: json['name'],
         locationId: json['location_id'],
         origin: json['origin'],
+        destocationName: json['location_dest_name'],
         date: json['date'],
         id: json['id'],
         // partnerId: json['partner_id'].toString(),
@@ -131,6 +136,15 @@ class MoveLineIds {
   bool isEdited;
   @HiveField(10)
   bool isSynced;
+  @HiveField(11)
+  int locationFromId;
+  @HiveField(12)
+  String locationFrom;
+  @HiveField(13)
+  int locationDestId;
+
+  bool isEditMode = false;
+  Location fromLocation,toLocation;
 
   MoveLineIds(
       {this.productUom,
@@ -141,17 +155,23 @@ class MoveLineIds {
       this.reservedQty,
       this.product,
       this.destination,
+      this.locationDestId,
+      this.locationFrom,
+      this.locationFromId,
       this.productId});
 
   MoveLineIds.fromJson(json) {
     productUom = json['product_uom'];
     productUomId = json['product_uom_id'];
-    lot = json['lot'].toString();
+    lot = json['lot_number'].toString();
     lotId = json['lot_id'].toString();
     quantityDone = json['quantity_done'];
     reservedQty = json['reserved_qty'];
     product = json['product'];
     destination = json['destination'];
+    locationFrom = json['location_from'];
+    locationFromId = json['location_from_id'];
+    locationDestId = json['location_dest_id'];
     productId = json['product_id'];
   }
 }

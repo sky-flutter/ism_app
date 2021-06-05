@@ -14,6 +14,7 @@ class KeyItem extends StatelessWidget {
       child: Container(
         child: MyText(
           title,
+          maxLines: 5,
           fontWeight: FontWeight.bold,
           color: MyColors.color_3F4446,
         ),

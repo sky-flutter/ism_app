@@ -25,14 +25,11 @@ class ApiClient {
 
   setUpClient() {
     dio = Dio();
-    (dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate =
-        (HttpClient client) {
-      client.badCertificateCallback =
-          (X509Certificate cert, String host, int port) => true;
+    (dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate = (HttpClient client) {
+      client.badCertificateCallback = (X509Certificate cert, String host, int port) => true;
       return client;
     };
-    var interceptor = InterceptorsWrapper(
-        onRequest: (RequestOptions options, RequestInterceptorHandler handler) {
+    var interceptor = InterceptorsWrapper(onRequest: (RequestOptions options, RequestInterceptorHandler handler) {
       if (kDebugMode) {
         logger.i("Request : URL : ${options.uri.toString()} "
             "DATA : ${options.data} "
@@ -71,6 +68,7 @@ class ApiClient {
 
   Future<ApiResponse> call(
       {String url,
+      String baseURL,
       Map<String, dynamic> params,
       ApiMethod method = ApiMethod.GET,
       FormData fileUploadData,
@@ -92,35 +90,31 @@ class ApiClient {
         }
       } catch (e) {}
 
-      url = ApiConstant.API_URL + url;
+      if (baseURL != null) {
+        url = baseURL + url;
+      } else {
+        url = ApiConstant.API_URL + url;
+      }
       var response;
       switch (method) {
         case ApiMethod.GET:
-          response = await dio.get(url,
-              queryParameters: params, options: Options(headers: headers));
+          response = await dio.get(url, queryParameters: params, options: Options(headers: headers));
           break;
         case ApiMethod.POST:
           response = await dio.post(url,
-              data: params,
-              options: Options(
-                  headers: headers,
-                  contentType: Headers.Headers.formUrlEncodedContentType));
+              data: params, options: Options(headers: headers, contentType: Headers.Headers.formUrlEncodedContentType));
           break;
         case ApiMethod.MULTIPART:
-          response = await dio.post(url,
-              data: fileUploadData, options: Options(headers: headers));
+          response = await dio.post(url, data: fileUploadData, options: Options(headers: headers));
           break;
         case ApiMethod.DELETE:
-          response = await dio.delete(url,
-              queryParameters: params, options: Options(headers: headers));
+          response = await dio.delete(url, queryParameters: params, options: Options(headers: headers));
           break;
         case ApiMethod.PUT:
-          response = await dio.put(url,
-              queryParameters: params, options: Options(headers: headers));
+          response = await dio.put(url, queryParameters: params, options: Options(headers: headers));
           break;
         default:
-          return ApiResponse.error(
-              errorMessage: "You have set wrong http method");
+          return ApiResponse.error(errorMessage: "You have set wrong http method");
       }
       if (response != null) {
         BaseResponse _baseResponse = ApiResponse.success(response.data);

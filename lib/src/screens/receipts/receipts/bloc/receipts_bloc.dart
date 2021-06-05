@@ -33,7 +33,6 @@ class ReceiptsBloc extends BaseBloc<BaseEvent, BaseState> {
         var response =
             await apiClient.call(url: ApiConstant.ENDPOINT_ALL_PICKING);
         if (response is BaseResponse) {
-          print("RESPONSE ::: ${response.results.toString()}");
           List<ReceiptData> listReceiptData =
               ReceiptData.fromJson(response.results);
           await addDataToDatabase<ReceiptData>(

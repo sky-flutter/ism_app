@@ -19,9 +19,9 @@ class ValueItem extends StatelessWidget {
       child: Container(
         child: MyText(
           title,
+          maxLines: 5,
           fontWeight: FontWeight.normal,
           color: textColor,
-          maxLines: 1,
         ),
         margin: EdgeInsets.only(top: topMargin),
       ),

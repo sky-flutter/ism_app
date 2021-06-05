@@ -38,6 +38,7 @@ showSnackBar(title, message, {color: Colors.red}) {
         message,
         color: Colors.white,
         fontSize: 12,
+        maxLines: 5,
         fontWeight: FontWeight.normal,
       ),
       margin: EdgeInsets.only(bottom: 16, left: 16, right: 16),
